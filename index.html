@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Loading...</title>
+    <!-- Changed title -->
+    <style>
+      /* Basic Reset */
+      body,
+      html {
+        margin: 0;
+        padding: 0;
+        height: 100%;
+        overflow: hidden; /* Prevent scrollbars */
+      }
+
+      /* Preloader Container Styling */
+      #svgviewer-preloader {
+        position: fixed; /* Cover viewport */
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        /* Dark background matching the SVGViewer code area */
+        background-color: #282a36;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        z-index: 9999; /* Ensure it's on top */
+
+        /* --- Add fade-out transition when hiding --- */
+        opacity: 1; /* Start visible */
+        transition: opacity 0.6s ease-out; /* Smooth fade out */
+      }
+
+      /* Class to hide the preloader */
+      #svgviewer-preloader.hidden {
+        opacity: 0;
+        pointer-events: none; /* Disable interaction when hidden */
+      }
+
+      /* The Core Spinner Styling */
+      .svgviewer-spinner {
+        width: 55px; /* Spinner size */
+        height: 55px;
+        position: relative; /* Needed for pseudo-elements */
+      }
+
+      /* Create the track and the two rotating arcs using pseudo-elements */
+      .svgviewer-spinner::before,
+      .svgviewer-spinner::after {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        border-radius: 50%; /* Make it circular */
+        box-sizing: border-box; /* Include border in size */
+      }
+
+      /* The Track (Subtle background circle) */
+      .svgviewer-spinner::before {
+        border: 5px solid rgba(248, 248, 242, 0.1);
+      }
+
+      /* The Rotating Arc (Orange Accent) */
+      .svgviewer-spinner::after {
+        border: 5px solid transparent; /* Transparent base */
+        border-top-color: #f97316; /* Orange accent */
+        /* Animation */
+        animation: svgviewer-spin 1s linear infinite;
+      }
+
+      /* Keyframes for the rotation */
+      @keyframes svgviewer-spin {
+        0% {
+          transform: rotate(0deg);
+        }
+        100% {
+          transform: rotate(360deg);
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Preloader Container -->
+    <div id="svgviewer-preloader">
+      <!-- The Spinner Element -->
+      <div class="svgviewer-spinner"></div>
+    </div>
+
+    <!-- NOTE: Removed the #main-content div as we are navigating away -->
+
+    <script>
+      // --- Script to hide preloader and navigate ---
+      window.addEventListener("load", () => {
+        const preloader = document.getElementById("svgviewer-preloader");
+        // Define how long the spinner should be visible MINIMALLY after page loads
+        const minDisplayTime = 3000; // Milliseconds (e.g., 3 seconds) - ADJUST AS NEEDED
+
+        // Define the target HTML page
+        const nextPageUrl = "main.html"; // <<< CHANGE THIS to your target page (e.g., 'signup_login.html', 'homepage.html')
+
+        const loadStartTime = Date.now(); // Record when the page finished loading
+
+        function proceedToNextPage() {
+          if (preloader) {
+            preloader.classList.add("hidden"); // Start fade out animation
+
+            // Wait for the fade-out transition (0.6s defined in CSS) to complete
+            setTimeout(() => {
+              console.log(`Preloader finished. Navigating to ${nextPageUrl}`);
+              window.location.href = nextPageUrl; // Navigate to the next page
+            }, 600); // Must match the CSS transition duration (0.6s)
+          } else {
+            // Fallback if preloader element is somehow gone
+            console.log(
+              `Preloader element not found. Navigating directly to ${nextPageUrl}`
+            );
+            window.location.href = nextPageUrl;
+          }
+        }
+
+        // Calculate how long to wait to meet the minimum display time
+        const timeElapsed = Date.now() - loadStartTime;
+        const waitTime = Math.max(0, minDisplayTime - timeElapsed); // Ensure non-negative wait
+
+        // Set timeout to start the fade-out and subsequent navigation
+        setTimeout(proceedToNextPage, waitTime);
+      });
+    </script>
+  </body>
+</html>
